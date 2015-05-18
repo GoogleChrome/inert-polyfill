@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+
+  *[inert]::before {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  button:focus {
+    border: 2px solid blue;
+  }
+
+  </style>
+  <script src="inert-polyfill.js"></script>
+  <script>
+
+window.addEventListener('load', function() {
+  document.getElementById('btn-but').addEventListener('click', function() {
+    console.info('specific click');
+  });
+});
+
+
+  </script>
+</head>
+<body>
+
+<!-- <div inert>
+  <button>First post lol</button>
+</div> -->
+
+Hello! You can press this <button accessKey="T">thing (T)</button> or...
+
+<div>
+  <button>that</button> or type <input type="text" placeholder="here" />
+</div>
+
+<div inert>
+  <button accessKey="b" id="btn-but">But (B)</button> not these <button>buttons</button> or type <input type="text" placeholder="into this" />
+</div>
+
+but...
+
+<span tabIndex="-1">
+  I'm focusable, but not tabbable 
+  <button>Whoa</button>
+</span>
+
+<style>
+.blah {
+  color:blue;
+}
+</style>
+
+Maybe this one <button>hello</button> or <button>goodbye</button> what about <input type="text" placeholder="some stuff" />
+
+<span tabIndex="0">
+  I can be tabbed to
+  <button inert>Inert</button>
+  <button>Test</button>
+  <button inert>Inert</button>
+  <button>Test</button>
+</span>
+
+<div inert>
+  <button>What about me?</button>
+  <div inert>
+    <button>Inert within inert</button>
+  </div>
+  <button>or meee</button>
+</div>
+
+<button>Trailing button</button>
+
+</body>
+</html>
