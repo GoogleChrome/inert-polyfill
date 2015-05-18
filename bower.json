@@ -1,0 +1,22 @@
+{
+  "name": "inert-polyfill",
+  "main": "inert-polyfill.min.js",
+  "homepage": "https://github.com/GoogleChrome/inert-polyfill",
+  "description": "Polyfill for the HTML inert attribute",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "html5",
+    "polyfill",
+    "inert"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
