@@ -25,7 +25,7 @@ This could be useful to prevent access to active HTML forms, to enable modal-lik
 To use the polyfill, the script just needs to be included in your page.
 There are no other initialization steps.
 
-The polyfill prevents tab-focusing, using the `accessKey` to access an element, and any other approach to focus.
+The polyfill prevents tab-focusing, using the `accessKey` to access an element, the `click` event (mostly for sanity -- elements should be unfocusable), and any other approach to focus.
 
 ### Installation
 
@@ -49,3 +49,5 @@ Most limitations revolve around keyboard access and the tab key-
 Other limitations include-
 
 - Content within an inert element may still be searched for (using the browser's Find box) or selected
+- Focused elements that become inert due to surrounding HTML changes will remain focused
+
