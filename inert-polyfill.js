@@ -138,6 +138,10 @@ window.addEventListener('load', function() {
         }
       }
 
+      // TODO: Alternatively, some browsers seem to respond correctly to fake
+      // tab events: they enumerate through focusable elements. This could be
+      // a second approach. Works in Chrome 43, Mac.
+
       // FIXME: If a focusable element can't be found here, it's likely to mean
       // that this is the start or end of the page. Blurring is then not quite
       // right, as it prevents access to the browser chrome.
