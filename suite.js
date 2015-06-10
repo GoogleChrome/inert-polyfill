@@ -15,7 +15,7 @@
  */
 
 
-suite('inert-polyfill', function() {
+void function() {
 
   /**
    * Sends a tab event on this document.
@@ -56,14 +56,23 @@ suite('inert-polyfill', function() {
     var input = document.createElement('input');
     input.type = 'text';
     input.placeholder = opt_text || '';
-    document.body.appendChild(input);
+    holder.appendChild(input);
     return input;
   }
+
+  var holder;  // global holder for all tests
+  setup(function() {
+    holder = document.createElement('div');
+    document.body.appendChild(holder);
+  });
+  teardown(function() {
+    holder.parentNode && holder.parentNode.removeChild(holder);
+  });
 
   test('default css applied', function() {
     var div = document.createElement('div');
     div.setAttribute('inert', '');
-    document.body.appendChild(div);
+    holder.appendChild(div);
 
     var s = window.getComputedStyle(div);
     assert.equal(s.webkitUserSelect || s.MozUserSelect || s.userSelect, 'none');
@@ -74,7 +83,7 @@ suite('inert-polyfill', function() {
   test('no programatic focus', function() {
     var div = document.createElement('div');
     div.setAttribute('inert', '');
-    document.body.appendChild(div);
+    holder.appendChild(div);
 
     var input = createInput('test inert');
     div.appendChild(input);
@@ -91,7 +100,7 @@ suite('inert-polyfill', function() {
   test('click prevented', function() {
     var clickCount = 0;
     var div = document.createElement('div');
-    document.body.appendChild(div);
+    holder.appendChild(div);
 
     var button = document.createElement('button');
     button.addEventListener('click', function() {
@@ -108,7 +117,7 @@ suite('inert-polyfill', function() {
   test('focused click prevented', function() {
     var clickCount = 0;
     var div = document.createElement('div');
-    document.body.appendChild(div);
+    holder.appendChild(div);
 
     var input = document.createElement('input');
     input.type = 'text';
@@ -151,4 +160,5 @@ suite('inert-polyfill', function() {
     }
     assert.equal(document.activeElement, beforeInput, 'tab-over (reverse) inert works');
   });
-});
+
+}();
