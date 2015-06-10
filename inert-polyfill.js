@@ -30,6 +30,25 @@ window.addEventListener('load', function() {
   applyStyle(css);
 
   /**
+   * Sends a fake tab event. This is only supported by some browsers.
+   *
+   * @param {boolean=} opt_shiftKey whether to send this with a shift key down
+   */
+  function dispatchTabEvent(opt_shiftKey) {
+    var ev = new KeyboardEvent('keydown', {
+      keyCode: 9,
+      which: 9,
+      key: 'Tab',
+      code: 'Tab',
+      keyIdentifier: 'U+0009',
+      shiftKey: !!opt_shiftKey,
+      bubbles: true
+    });
+    Object.defineProperty(ev, 'keyCode', { value: 9 });
+    document.activeElement.dispatchEvent(ev);
+  }
+
+  /**
    * Finds the nearest adjacent Element in the specified direction. If this is
    * negative, this will include the parent element.
    *
@@ -114,10 +133,18 @@ window.addEventListener('load', function() {
     var inertElement = madeInertBy(target);
     if (!inertElement) { return; }
 
-    if (lastTabDirection !== 0) {
-      // If the page has been tabbed recently, then focus the next element
-      // in the known direction (if available). Check that calling focus
-      // actually changes the activeElement.
+    // If the page has been tabbed recently, then focus the next element
+    // in the known direction (if available).
+    if (document.hasFocus() && lastTabDirection !== 0) {
+
+      // Send a fake tab event to enumerate through the browser's view of
+      // focusable elements. This is supported in some browsers (not Firefox).
+      var previous = document.activeElement;
+      dispatchTabEvent(lastTabDirection < 0 ? true : false);
+      if (previous != document.activeElement) { return; }
+
+      // Otherwise, enumerate through adjacent elements to find the next
+      // focusable element. This won't respect any custom tabIndex.
       var candidate = inertElement;
       for (;;) {
         candidate = findAdjacent(candidate, lastTabDirection);
@@ -137,10 +164,6 @@ window.addEventListener('load', function() {
           }
         }
       }
-
-      // TODO: Alternatively, some browsers seem to respond correctly to fake
-      // tab events: they enumerate through focusable elements. This could be
-      // a second approach. Works in Chrome 43, Mac.
 
       // FIXME: If a focusable element can't be found here, it's likely to mean
       // that this is the start or end of the page. Blurring is then not quite

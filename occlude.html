@@ -38,6 +38,7 @@ Hello! You can press this <button accessKey="T">thing (T)</button> or...
 </div>
 
 <div inert>
+  <input type="text" placeholder="Faux" />
   <button accessKey="b" id="btn-but">But (B)</button> not these <button>buttons</button> or type <input type="text" placeholder="into this" />
 </div>
 
@@ -45,7 +46,7 @@ but...
 
 <span tabIndex="-1">
   I'm focusable, but not tabbable 
-  <button>Whoa</button>
+  <button tabIndex="100">Whoa (100)</button>
 </span>
 
 <style>
