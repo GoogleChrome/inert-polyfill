@@ -52,21 +52,30 @@ window.addEventListener('load', function() {
    * Finds the nearest adjacent Element in the specified direction. If this is
    * negative, this will include the parent element.
    *
-   * @param {Element} e to find adjacent of
+   * @param {!Element} e to find adjacent of
    * @param {number} dir to move in (+ve or -ve)
+   * @param {!Element=} opt_initial to prevent descent into
    * @return {Element} adjacent element
    */
-  function findAdjacent(e, dir) {
-    var arg = dir < 0 ? 'previousElementSibling' : 'nextElementSibling';
-    while (e && e !== document.documentElement) {
-      var adjacent = e[arg];
-      if (adjacent) {
-        return adjacent;
-      }
-      e = e.parentElement;
-      if (dir < 0) {
+  function walkElementTree(e, dir, opt_initial) {
+    if (dir < 0) {
+      if (e.previousElementSibling) {
+        e = e.previousElementSibling;
+        while (e.lastElementChild) {
+          e = e.lastElementChild;
+        }
         return e;
       }
+      return e.parentElement;
+    }
+    if (e != opt_initial && e.firstElementChild) {
+      return e.firstElementChild;
+    }
+    while (e) {
+      if (e.nextElementSibling) {
+        return e.nextElementSibling;
+      }
+      e = /** @type {!Element} */ (e.parentElement);
     }
     return null;
   }
@@ -147,22 +156,9 @@ window.addEventListener('load', function() {
       // focusable element. This won't respect any custom tabIndex.
       var candidate = inertElement;
       for (;;) {
-        candidate = findAdjacent(candidate, lastTabDirection);
+        candidate = walkElementTree(candidate, lastTabDirection, inertElement);
         if (!candidate) { break; }
-
-        var q = [candidate];
-        while (q.length) {
-          var next = lastTabDirection < 0 ? q.pop() : q.shift();
-//          if (next.hasAttribute('inert')) { continue; }
-
-          // FIXME: If lastTabDirection is -ve, this should try the children of
-          // 'next' first.
-          if (tryFocus(next, target)) { return; }
-
-          for (var i = 0; i < next.children.length; ++i) {
-            q.push(next.children[i]);
-          }
-        }
+        if (tryFocus(candidate, target)) { return; }
       }
 
       // FIXME: If a focusable element can't be found here, it's likely to mean

@@ -25,7 +25,7 @@ This could be useful to prevent access to active HTML forms, to enable modal-lik
 To use the polyfill, the script just needs to be included in your page.
 There are no other initialization steps.
 
-The polyfill prevents tab-focusing, using the `accessKey` to access an element, the `click` event (mostly for sanity -- elements should be unfocusable), and any other approach to focus.
+The polyfill prevents tab-focusing, using the `accessKey` to access an element, the `click` event (mostly for sanity, as elements should be unfocusable), and any other approach to focus.
 
 ### Installation
 
@@ -41,10 +41,10 @@ This polyfill works on modern versions of all major browsers. It also supports I
 
 Most limitations revolve around keyboard access and the tab key-
 
-- Positive values of `tabIndex` are ignored, and the polyfill will always tab either directly before or after an `inert` element
+- Some browsers (Firefox) don't support emulating tab events, so positive values of `tabIndex` may be ignored
   - Avoid relying on a specific tab order
 - Inert elements at the very start or end of a page may prevent tab access to the browser's chrome
-- Elements within an inert element may still receive `focus` and `blur` events
+- Elements within an inert element may still receive intermediate `focus` and `blur` events
 
 Other limitations include-
 
