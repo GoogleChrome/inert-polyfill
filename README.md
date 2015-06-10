@@ -1,4 +1,4 @@
-Polyfill for the `inert` HTML attribute.
+Polyfill for the `inert` HTML attribute. [Check out a small demo](https://rawgit.com/GoogleChrome/inert-polyfill/master/demo.html).
 
 The `inert` attribute is an [upcoming feature](https://html.spec.whatwg.org/multipage/interaction.html#inert-subtrees) [of HTML](http://drafts.htmlwg.org/html/master/editing.html#inert-subtrees).
 Its implementation is being tracked by some major browser vendors.
