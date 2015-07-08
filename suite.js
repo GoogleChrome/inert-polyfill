@@ -18,38 +18,52 @@
 void function() {
 
   /**
-   * Sends a tab event on this document.
+   * Sends a tab event on this document. Note that this is a copy of
+   * dispatchTabEvent from the polyfill source.
    *
-   * @param {boolean?} opt_shiftKey whether to send this tab with shiftKey
+   * @param {boolean=} opt_shiftKey whether to send this tab with shiftKey
    */
   function sendTab(opt_shiftKey) {
-    var ev = new KeyboardEvent('keydown', {
-      keyCode: 9,
-      which: 9,
-      key: 'Tab',
-      code: 'Tab',
-      keyIdentifier: 'U+0009',
-      shiftKey: !!opt_shiftKey,
-    });
-    Object.defineProperty(ev, 'keyCode', { value: 9 });
-    Object.defineProperty(ev, 'which', { value: 9 });
-    Object.defineProperty(ev, 'key', { value: 'Tab' });
-    Object.defineProperty(ev, 'code', { value: 'Tab' });
-
-    // TODO: This is an attempt to get Firefox to actually handle the Tab
-    // correctly, and invoke correct browser behaviour. It doesn't work though.
-    if ('initKeyEvent' in ev) {
-      ev = document.createEvent('KeyboardEvent');
-      ev.initKeyEvent(
-          'keydown', true, true, null, false, false, !!opt_shiftKey, false, 9, 9); 
+    var ev = null;
+    try {
+      ev = new KeyboardEvent('keydown', {
+        keyCode: 9,
+        which: 9,
+        key: 'Tab',
+        code: 'Tab',
+        keyIdentifier: 'U+0009',
+        shiftKey: !!opt_shiftKey,
+        bubbles: true
+      });
+    } catch (e) {
+      try {
+        // Internet Explorer
+        ev = document.createEvent('KeyboardEvent');
+        ev.initKeyboardEvent(
+          'keydown',
+          true,
+          true,
+          window,
+          'Tab',
+          0,
+          opt_shiftKey ? 'Shift' : '',
+          false,
+          'en'
+        )
+      } catch (e) {}
     }
-    document.dispatchEvent(ev);
+    if (ev) {
+      try {
+        Object.defineProperty(ev, 'keyCode', { value: 9 });
+      } catch (e) {}
+      document.dispatchEvent(ev);
+    }
   }
 
   /**
    * Creates a text input element and adds it to <body>.
    *
-   * @param {string?} opt_text to use as placeholder
+   * @param {string=} opt_text to use as placeholder
    * @return {!HTMLInputElement} added to page
    */
   function createInput(opt_text) {
@@ -75,7 +89,7 @@ void function() {
     holder.appendChild(div);
 
     var s = window.getComputedStyle(div);
-    assert.equal(s.webkitUserSelect || s.MozUserSelect || s.userSelect, 'none');
+    assert.equal(s.webkitUserSelect || s.MozUserSelect || s.msUserSelect || s.userSelect, 'none');
 
     var bs = window.getComputedStyle(div, ':before');
     assert.equal(bs.position, 'absolute');

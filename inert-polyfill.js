@@ -32,20 +32,43 @@ window.addEventListener('load', function() {
   /**
    * Sends a fake tab event. This is only supported by some browsers.
    *
-   * @param {boolean=} opt_shiftKey whether to send this with a shift key down
+   * @param {boolean=} opt_shiftKey whether to send this tab with shiftKey
    */
   function dispatchTabEvent(opt_shiftKey) {
-    var ev = new KeyboardEvent('keydown', {
-      keyCode: 9,
-      which: 9,
-      key: 'Tab',
-      code: 'Tab',
-      keyIdentifier: 'U+0009',
-      shiftKey: !!opt_shiftKey,
-      bubbles: true
-    });
-    Object.defineProperty(ev, 'keyCode', { value: 9 });
-    document.activeElement.dispatchEvent(ev);
+    var ev = null;
+    try {
+      ev = new KeyboardEvent('keydown', {
+        keyCode: 9,
+        which: 9,
+        key: 'Tab',
+        code: 'Tab',
+        keyIdentifier: 'U+0009',
+        shiftKey: !!opt_shiftKey,
+        bubbles: true
+      });
+    } catch (e) {
+      try {
+        // Internet Explorer
+        ev = document.createEvent('KeyboardEvent');
+        ev.initKeyboardEvent(
+          'keydown',
+          true,
+          true,
+          window,
+          'Tab',
+          0,
+          opt_shiftKey ? 'Shift' : '',
+          false,
+          'en'
+        )
+      } catch (e) {}
+    }
+    if (ev) {
+      try {
+        Object.defineProperty(ev, 'keyCode', { value: 9 });
+      } catch (e) {}
+      document.dispatchEvent(ev);
+    }
   }
 
   /**
