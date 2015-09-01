@@ -1,0 +1,13 @@
+{
+  "name": "inert-polyfill",
+  "version": "0.2.0",
+  "description": "Polyfill for the HTML inert attribute",
+  "main": "inert-polyfill.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleChrome/inert-polyfill.git"
+  },
+  "author": "The Chromium Authors",
+  "license": "Apache2",
+  "homepage": "https://github.com/GoogleChrome/inert-polyfill"
+}
