@@ -29,8 +29,9 @@ The polyfill prevents tab-focusing, using the `accessKey` to access an element, 
 
 ### Installation
 
-You may optionally install via Bower-
+You may optionally install via NPM or Bower-
 
+    $ npm install inert-polyfill
     $ bower install inert-polyfill
 
 ### Supports
