@@ -52,3 +52,15 @@ Other limitations include-
 - Content within an inert element may still be searched for (using the browser's Find box) or selected
 - Focused elements that become inert due to surrounding HTML changes will remain focused
 
+# Release
+
+Compile code with [Closure Compiler](https://closure-compiler.appspot.com/home).
+
+```
+// ==ClosureCompiler==
+// @compilation_level ADVANCED_OPTIMIZATIONS
+// @output_file_name inert-polyfill.min.js
+// ==/ClosureCompiler==
+
+// code here
+```
