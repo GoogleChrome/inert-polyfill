@@ -111,6 +111,19 @@ void function() {
     div.focus();
     assert.notEqual(document.activeElement, div, 'inert element itself unavailable');
   });
+  test('support inert property', function() {
+    var div = document.createElement('div');
+
+    div.inert = true;
+    assert(div.hasAttribute('inert'));
+    div.inert = false;
+    assert(!div.hasAttribute('inert'));
+
+    div.setAttribute('inert', '');
+    assert(div.inert);
+    div.removeAttribute('inert');
+    assert(!div.inert);
+  });
   test('click prevented', function() {
     var clickCount = 0;
     var div = document.createElement('div');

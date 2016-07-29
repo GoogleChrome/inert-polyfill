@@ -206,4 +206,16 @@ window.addEventListener('load', function() {
     }
   }, true);
 
+  var inertOpts = {
+    enumerable: true,
+    get: function() { return this.hasAttribute('inert'); },
+    set: function(inert) {
+      if (inert) {
+        this.setAttribute('inert', '');
+      } else {
+        this.removeAttribute('inert');
+      }
+    }
+  };
+  Object.defineProperty(Element.prototype, 'inert', inertOpts);
 });
