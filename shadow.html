@@ -1,0 +1,26 @@
+<script src="inert-polyfill.js"></script>
+
+<body>
+  <a href="#">link</a>
+  
+</body>
+<script>
+var d = document.createElement('div');
+document.body.appendChild(d);
+
+var root = d.createShadowRoot();
+root.innerHTML = 'shadowRoot: <div style="background: rgba(0, 0, 0, 0.125);"><button inert>inert test</button> <a href="#">normal link</a> blah</div>';
+
+// root.addEventListener('focus', function(ev) {
+//   console.debug('root focus', ev);
+// }, true);
+//
+// document.body.addEventListener('focusin', function(ev) {
+//   console.warn('focus', ev, ev.path);
+// }, true);
+
+</script>
+
+
+
+<a href="#">another</a>

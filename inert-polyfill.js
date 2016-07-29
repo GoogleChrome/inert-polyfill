@@ -122,24 +122,31 @@ window.addEventListener('load', function() {
   }
 
   /**
-   * Tries to focus on the passed candidate element. Compares to the previously
-   * focused element.
+   * Finds the nearest shadow root from an element that's within said shadow root.
    *
-   * @param {!Element} candidate
-   * @param {Element} previous
-   * @return {boolean} if focus was successful
+   * @param {Element} e to check
+   * @return {Node} shadow root, if any
    */
-  function tryFocus(candidate, previous) {
-    // Ignore elements with -ve tabIndex, as they should not be focusable
-    // by tab.
-    // FIXME: Some browsers (Mac Safari) ignores some elements in tab
-    // ordering, similarly to a default -ve value. This is a user pref,
-    // and we need a way to detect it.
-    if (!(candidate.tabIndex < 0)) {
-      candidate.focus();
-      if (document.activeElement !== previous) { return true; }
+  var findShadowRoot = function(e) { return null; };
+  if (window.ShadowRoot) {
+    findShadowRoot = function(e) {
+      while (e && e !== document.documentElement) {
+        if (e instanceof window.ShadowRoot) { return e; }
+        e = e.parentNode;
+      }
+      return null;
     }
-    return false;
+  }
+
+  /**
+   * Returns the target of the passed event. If there's a path (shadow DOM only), then prefer it.
+   *
+   * @param {!Event} event
+   * @return {Element} target of event
+   */
+  function targetForEvent(event) {
+    var p = event.path;
+    return  /** @type {Element} */ (p && p[0] || event.target);
   }
 
   // Hold onto the last tab direction: next (tab) or previous (shift-tab). This
@@ -157,23 +164,45 @@ window.addEventListener('load', function() {
     lastTabDirection = 0;
   });
 
-  // The 'focusin' event bubbles, but instead, use 'focus' with useCapture set
-  // to true as this is supported in Firefox. Additionally, target the body so
-  // this doesn't generate superfluous events on document itself.
-  document.body.addEventListener('focus', function(ev) {
-    var target = /** @type {Element} */ (ev.target);
+  var focusedShadowRoot = null;
+  function updateFocusedShadowRoot(root) {
+    if (root == focusedShadowRoot) { return; }
+    if (focusedShadowRoot) {
+      if (!(focusedShadowRoot instanceof window.ShadowRoot)) {
+        throw new Error('not shadow root: ' + focusedShadowRoot);
+      }
+      focusedShadowRoot.removeEventListener('focusin', shadowFocusHandler, true);  // remove
+    }
+    if (root) {
+      root.addEventListener('focusin', shadowFocusHandler, true);  // add
+    }
+    focusedShadowRoot = root;
+  }
+
+  function shadowFocusHandler(ev) {
+    var last = ev.path[ev.path.length - 1];
+    if (last === window) { return; }  // ignore "direct" focus, we only want shadow root focus
+    sharedFocusHandler(targetForEvent(ev));
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+
+  function sharedFocusHandler(target) {
     var inertElement = madeInertBy(target);
     if (!inertElement) { return; }
 
     // If the page has been tabbed recently, then focus the next element
     // in the known direction (if available).
     if (document.hasFocus() && lastTabDirection !== 0) {
+      function getFocused() {
+        return (focusedShadowRoot || document).activeElement;
+      }
 
       // Send a fake tab event to enumerate through the browser's view of
       // focusable elements. This is supported in some browsers (not Firefox).
-      var previous = document.activeElement;
+      var previous = getFocused();
       dispatchTabEvent(lastTabDirection < 0 ? true : false);
-      if (previous != document.activeElement) { return; }
+      if (previous != getFocused()) { return; }
 
       // Otherwise, enumerate through adjacent elements to find the next
       // focusable element. This won't respect any custom tabIndex.
@@ -181,7 +210,10 @@ window.addEventListener('load', function() {
       for (;;) {
         candidate = walkElementTree(candidate, lastTabDirection, inertElement);
         if (!candidate) { break; }
-        if (tryFocus(candidate, target)) { return; }
+        if (!(candidate.tabIndex < 0)) {
+          candidate.focus();
+          if (getFocused() !== previous) { return; }
+        }
       }
 
       // FIXME: If a focusable element can't be found here, it's likely to mean
@@ -193,6 +225,15 @@ window.addEventListener('load', function() {
     // still generates focus and blur events on the element. This is (probably)
     // the price to pay for this polyfill.
     target.blur();
+  }
+
+  // The 'focusin' event bubbles, but instead, use 'focus' with useCapture set
+  // to true as this is supported in Firefox. Additionally, target the body so
+  // this doesn't generate superfluous events on document itself.
+  document.body.addEventListener('focus', function(ev) {
+    var target = targetForEvent(ev);
+    updateFocusedShadowRoot((target == ev.target ? null : findShadowRoot(target)));
+    sharedFocusHandler(target);  // either real DOM node or shadow node
     ev.preventDefault();
     ev.stopPropagation();
   }, true);
@@ -200,7 +241,8 @@ window.addEventListener('load', function() {
   // Use a capturing click listener as both a safety fallback, and to prevent
   // accessKey access to inert elements.
   document.addEventListener('click', function(ev) {
-    if (madeInertBy(/** @type {Element} */ (ev.target))) {
+    var target = targetForEvent(ev);
+    if (madeInertBy(target)) {
       ev.preventDefault();
       ev.stopPropagation();
     }
