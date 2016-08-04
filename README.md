@@ -36,7 +36,8 @@ You may optionally install via NPM or Bower-
 
 ### Supports
 
-This polyfill works on modern versions of all major browsers. It also supports IE9 and above.
+This polyfill works on modern versions of all major browsers.
+It also supports IE9 and above, although links and buttons may appear clickable (IE9 and IE10 do not support `pointer-events`, although there is a [polyfill](https://github.com/kmewhort/pointer_events_polyfill)).
 
 ## Limitations
 

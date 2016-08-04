@@ -26,7 +26,7 @@ window.addEventListener('load', function() {
     }
     document.body.appendChild(style);
   }
-  var css = "/*[inert]*/[inert]{position:relative!important;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}[inert]::before{content:'';display:block;position:absolute;top:0;left:0;right:0;bottom:0}";
+  var css = "/*[inert]*/*[inert]{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}";
   applyStyle(css);
 
   /**

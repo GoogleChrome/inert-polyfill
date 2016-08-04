@@ -16,24 +16,9 @@
 
 
 *[inert] {
-  position: relative !important;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
   pointer-events: none;
-}
-
-/**
- * This is redundant vis-à-vis pointer-events: none, but provided for
- * compatability with IE9+.
- */
-*[inert]::before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
