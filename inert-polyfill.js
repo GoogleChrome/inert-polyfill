@@ -189,7 +189,7 @@ window.addEventListener('load', function() {
    */
   function shadowFocusHandler(ev) {
     var last = ev.path[ev.path.length - 1];
-    if (last === window) { return; }  // ignore "direct" focus, we only want shadow root focus
+    if (last === /** @type {*} */ (window)) { return; }  // ignore "direct" focus, we only want shadow root focus
     sharedFocusHandler(targetForEvent(ev));
     ev.preventDefault();
     ev.stopPropagation();
@@ -199,7 +199,7 @@ window.addEventListener('load', function() {
    * Called indirectly by both the regular focus handler and Shadow DOM host focus handler. This is
    * the bulk of the polyfill which prevents focus.
    *
-   * @param {!Element} target focused on
+   * @param {Element} target focused on
    */
   function sharedFocusHandler(target) {
     var inertElement = madeInertBy(target);
