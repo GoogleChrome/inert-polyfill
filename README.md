@@ -1,7 +1,7 @@
 Polyfill for the `inert` HTML attribute. [Check out a small demo](https://rawgit.com/GoogleChrome/inert-polyfill/master/demo.html).
 
 The `inert` attribute is a [draft feature](https://html.spec.whatwg.org/multipage/interaction.html#inert-subtrees) [of HTML](http://drafts.htmlwg.org/html/master/editing.html#inert-subtrees).
-As of late 2015, some major [browser](https://bugzilla.mozilla.org/show_bug.cgi?id=921504) [vendors](https://code.google.com/p/chromium/issues/detail?id=269846) have decided not to implement the feature.
+In 2015, some [browser](https://bugzilla.mozilla.org/show_bug.cgi?id=921504) [vendors](https://code.google.com/p/chromium/issues/detail?id=269846) decided not to implement this feature; but as of 2016, there has been some renewed interest.
 
 From the HTML spec-
 
@@ -51,6 +51,9 @@ Other limitations include-
 
 - Content within an inert element may still be searched for (using the browser's Find box) or selected
 - Focused elements that become inert due to surrounding HTML changes will remain focused
+
+If these limitations do not work for your project, there is also a [WICG polyfill](https://github.com/WICG/inert), which uses `MutationObserver` to recursively walk HTML trees to clear `tabIndex` (clearing or setting to -1).
+The `GoogleChrome` hosted polyfill simply overloads `focus` and related events to prevent focus, which has less setup cost.
 
 # Release
 
