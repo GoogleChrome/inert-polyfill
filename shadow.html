@@ -1,0 +1,18 @@
+<script src="inert-polyfill.js"></script>
+
+<body>
+  <a href="#">link</a>
+  
+</body>
+<script>
+var d = document.createElement('div');
+document.body.appendChild(d);
+
+var root = d.createShadowRoot();
+root.innerHTML = 'shadowRoot: <div style="background: rgba(0, 0, 0, 0.125);"><button inert>inert test</button> <a href="#">normal link</a> blah</div>';
+
+</script>
+
+
+
+<a href="#">another</a>

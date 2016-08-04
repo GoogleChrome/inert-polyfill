@@ -188,4 +188,29 @@ void function() {
     assert.equal(document.activeElement, beforeInput, 'tab-over (reverse) inert works');
   });
 
+  var testEl = document.createElement('div');
+  if (testEl.createShadowRoot || testEl.attachShadow) {
+    // test this
+    test('inert within shadow root', function() {
+      var el = document.createElement('div');
+      holder.appendChild(el);
+      var root = el.createShadowRoot ? el.createShadowRoot() : el.attachShadow();
+
+      var button = document.createElement('button');
+      root.appendChild(button);
+      button.focus();
+      assert.equal(document.activeElement, el, 'shadow host itself is focused');
+      assert.equal(root.activeElement, button, 'button within shadow is focused');
+
+      var inertButton = document.createElement('button');
+      inertButton.setAttribute('inert', '');
+      root.appendChild(inertButton);
+      inertButton.focus();
+      assert.notEqual(root.activeElement, inertButton, 'shadow root button inert');
+
+      inertButton.click();
+      assert.notEqual(root.activeElement, inertButton, 'shadow root button inert when clicked');
+    });
+  }
+
 }();
