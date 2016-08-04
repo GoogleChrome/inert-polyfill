@@ -124,6 +124,8 @@ window.addEventListener('load', function() {
   /**
    * Finds the nearest shadow root from an element that's within said shadow root.
    *
+   * TODO(samthor): We probably want to find the highest shadow root.
+   *
    * @param {Element} e to check
    * @return {Node} shadow root, if any
    */
@@ -164,6 +166,7 @@ window.addEventListener('load', function() {
     lastTabDirection = 0;
   });
 
+  // Retain the currently focused shadowRoot.
   var focusedShadowRoot = null;
   function updateFocusedShadowRoot(root) {
     if (root == focusedShadowRoot) { return; }
@@ -179,6 +182,11 @@ window.addEventListener('load', function() {
     focusedShadowRoot = root;
   }
 
+  /**
+   * Focus handler on a Shadow DOM host. This traps focus events within that root.
+   *
+   * @param {!Event} ev
+   */
   function shadowFocusHandler(ev) {
     var last = ev.path[ev.path.length - 1];
     if (last === window) { return; }  // ignore "direct" focus, we only want shadow root focus
@@ -187,6 +195,12 @@ window.addEventListener('load', function() {
     ev.stopPropagation();
   }
 
+  /**
+   * Called indirectly by both the regular focus handler and Shadow DOM host focus handler. This is
+   * the bulk of the polyfill which prevents focus.
+   *
+   * @param {!Element} target focused on
+   */
   function sharedFocusHandler(target) {
     var inertElement = madeInertBy(target);
     if (!inertElement) { return; }
@@ -238,8 +252,10 @@ window.addEventListener('load', function() {
     ev.stopPropagation();
   }, true);
 
-  // Use a capturing click listener as both a safety fallback, and to prevent
-  // accessKey access to inert elements.
+  // Use a capturing click listener as both a safety fallback where pointer-events is not
+  // available (IE10 and below), and to prevent accessKey access to inert elements.
+  // TODO(samthor): Note that pointer-events polyfills trap more mouse events, e.g.-
+  //   https://github.com/kmewhort/pointer_events_polyfill
   document.addEventListener('click', function(ev) {
     var target = targetForEvent(ev);
     if (madeInertBy(target)) {
