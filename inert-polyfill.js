@@ -263,17 +263,16 @@ window.addEventListener('load', function() {
       ev.stopPropagation();
     }
   }, true);
+});
 
-  var inertOpts = {
-    enumerable: true,
-    get: function() { return this.hasAttribute('inert'); },
-    set: function(inert) {
-      if (inert) {
-        this.setAttribute('inert', '');
-      } else {
-        this.removeAttribute('inert');
-      }
+Object.defineProperty(Element.prototype, 'inert', {
+  enumerable: true,
+  get: function() { return this.hasAttribute('inert'); },
+  set: function(inert) {
+    if (inert) {
+      this.setAttribute('inert', '');
+    } else {
+      this.removeAttribute('inert');
     }
-  };
-  Object.defineProperty(Element.prototype, 'inert', inertOpts);
+  }
 });
