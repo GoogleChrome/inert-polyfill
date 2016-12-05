@@ -267,7 +267,17 @@ window.addEventListener('load', function() {
 
 Object.defineProperty(Element.prototype, 'inert', {
   enumerable: true,
+
+  /**
+   * @return {boolean}
+   * @this {Element}
+   */
   get: function() { return this.hasAttribute('inert'); },
+
+  /**
+   * @param {boolean} inert
+   * @this {Element}
+   */
   set: function(inert) {
     if (inert) {
       this.setAttribute('inert', '');
