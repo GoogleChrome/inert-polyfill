@@ -248,8 +248,6 @@ window.addEventListener('load', function() {
     var target = targetForEvent(ev);
     updateFocusedShadowRoot((target == ev.target ? null : findShadowRoot(target)));
     sharedFocusHandler(target);  // either real DOM node or shadow node
-    ev.preventDefault();
-    ev.stopPropagation();
   }, true);
 
   // Use a capturing click listener as both a safety fallback where pointer-events is not
