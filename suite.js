@@ -83,16 +83,21 @@ void function() {
     holder.parentNode && holder.parentNode.removeChild(holder);
   });
 
-  test('default css applied', function() {
+  test('normal input should get focus', function() {
     var div = document.createElement('div');
-    div.setAttribute('inert', '');
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = 'dummy';
+    div.appendChild(input);
     holder.appendChild(div);
 
-    var s = window.getComputedStyle(div);
-    assert.equal(s.webkitUserSelect || s.MozUserSelect || s.msUserSelect || s.userSelect, 'none');
+    input.focus();
 
-    var bs = window.getComputedStyle(div, ':before');
-    assert.equal(bs.position, 'absolute');
+    assert.equal(document.activeElement, input);
+
+    // TODO(samthor): If focus is prevented, Firefox shows an odd state: highlighted, with a
+    // selection defined on the input, but without a caret visible. It's weird. Can we test for it?
+
   });
   test('no programatic focus', function() {
     var div = document.createElement('div');
