@@ -1,7 +1,8 @@
 Polyfill for the `inert` HTML attribute. [Check out a small demo](https://rawgit.com/GoogleChrome/inert-polyfill/master/demo.html).
 
 The `inert` attribute is a [draft feature](https://html.spec.whatwg.org/multipage/interaction.html#inert-subtrees) [of HTML](http://drafts.htmlwg.org/html/master/editing.html#inert-subtrees).
-In 2015, some [browser](https://bugzilla.mozilla.org/show_bug.cgi?id=921504) [vendors](https://code.google.com/p/chromium/issues/detail?id=269846) decided not to implement this feature; but as of 2016, there has been some renewed interest.
+As of Feb 2017, no browser has a native implementation of `inert`.
+However, there is [active development](https://codereview.chromium.org/2088453002/) inside Chrome, and other browsers have shown some renewed interest.
 
 From the HTML spec-
 
@@ -43,7 +44,7 @@ It also supports IE9 and above, although links and buttons may appear clickable 
 
 Most limitations revolve around keyboard access and the tab key-
 
-- Some browsers (Firefox) don't support emulating tab events, so positive values of `tabIndex` may be ignored
+- Most browsers don't support emulating tab events, so positive values of `tabIndex` may be ignored
   - Avoid relying on a specific tab order
 - Inert elements at the very start or end of a page may prevent tab access to the browser's chrome
 - While tabbing over inert elements, inner elements may still receive intermediate `focus` and `blur` events
@@ -52,9 +53,11 @@ Other limitations include-
 
 - Content within an inert element may still be searched for (using the browser's Find box) or selected
 - Focused elements that become inert due to surrounding HTML changes will remain focused
+- Inert will work within a shadow root, but the CSS to support it is not included
 
 If these limitations do not work for your project, there is also a [WICG polyfill](https://github.com/WICG/inert), which uses `MutationObserver` to recursively walk HTML trees to clear `tabIndex` (clearing or setting to -1).
-The `GoogleChrome` hosted polyfill simply overloads `focus` and related events to prevent focus, which has less setup cost.
+This is more _correct_, but will incur a performance hit when inert is enabled or disabled.
+The `GoogleChrome` hosted polyfill simply overloads `focus` and related events to prevent focus.
 
 # Release
 
