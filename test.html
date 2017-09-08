@@ -16,6 +16,9 @@
 <!DOCTYPE html>
 <meta charset="UTF-8" />
 <link rel="stylesheet" href="bower_components/mocha/mocha.css" />
+<script>
+  var nativeSupport = ('inert' in HTMLElement.prototype);
+</script>
 <script src="bower_components/mocha/mocha.js"></script>
 <script src="bower_components/chai/chai.js"></script>
 <script src="inert-polyfill.js"></script>
@@ -36,6 +39,13 @@ mocha.setup({ ui: 'tdd' });
       suite('page-script-errors', function() {
         test('no script errors on page', function() {
           assert.fail(null, null, pageError);
+        });
+      });
+    }
+    if (nativeSupport) {
+      suite('native-support', function() {
+        test('native support, tests will fail', function() {
+          assert.fail(null, null, nativeSupport);
         });
       });
     }
