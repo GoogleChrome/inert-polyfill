@@ -199,7 +199,7 @@ void function() {
     test('inert within shadow root', function() {
       var el = document.createElement('div');
       holder.appendChild(el);
-      var root = el.createShadowRoot ? el.createShadowRoot() : el.attachShadow();
+      var root = el.createShadowRoot ? el.createShadowRoot() : el.attachShadow({mode: 'open'});
 
       var button = document.createElement('button');
       root.appendChild(button);

@@ -20,7 +20,7 @@
     "tests"
   ],
   "devDependencies": {
-    "mocha": "",
+    "mocha": "~3",
     "chai": ""
   }
 }
