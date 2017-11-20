@@ -247,6 +247,7 @@ if (!('inert' in HTMLElement.prototype)) {
         for (;;) {
           candidate = walkElementTree(candidate, lastTabDirection, inertElement);
           if (!candidate) { break; }
+          if (!candidate.focus) { continue; }
           if (!(candidate.tabIndex < 0)) {
             candidate.focus();
             if (getFocused() !== previous) { return; }
