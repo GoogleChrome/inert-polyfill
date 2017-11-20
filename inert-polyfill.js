@@ -211,15 +211,20 @@ if (!('inert' in HTMLElement.prototype)) {
 
         // Otherwise, enumerate through adjacent elements to find the next
         // focusable element. This won't respect any custom tabIndex.
-        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, {
+        var filter = /** @type {NodeFilter} */ ({
+          /**
+           * @param {Node} node
+           * @return {number}
+           */
           acceptNode: function(node) {
-            if (!node.focus || node.tabIndex < 0) {
+            if (!node || !node.focus || node.tabIndex < 0) {
               return NodeFilter.FILTER_SKIP;  // look at descendants
             }
             var contained = inertElement.contains(node);
             return contained ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
           },
         });
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, filter);
         walker.currentNode = inertElement;
 
         var nextFunc = Math.sign(lastTabDirection) === -1 ? walker.previousNode : walker.nextNode

@@ -1,6 +1,6 @@
 {
   "name": "inert-polyfill",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Polyfill for the HTML inert attribute",
   "main": "inert-polyfill.min.js",
   "repository": {
