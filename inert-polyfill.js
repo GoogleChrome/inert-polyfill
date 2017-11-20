@@ -94,38 +94,6 @@ if (!('inert' in HTMLElement.prototype)) {
     }
 
     /**
-     * Finds the nearest adjacent Element in the specified direction. If this is
-     * negative, this will include the parent element.
-     *
-     * @param {!Element} e to find adjacent of
-     * @param {number} dir to move in (+ve or -ve)
-     * @param {!Element=} opt_initial to prevent descent into
-     * @return {Element} adjacent element
-     */
-    function walkElementTree(e, dir, opt_initial) {
-      if (dir < 0) {
-        if (e.previousElementSibling) {
-          e = e.previousElementSibling;
-          while (e.lastElementChild) {
-            e = e.lastElementChild;
-          }
-          return e;
-        }
-        return e.parentElement;
-      }
-      if (e != opt_initial && e.firstElementChild) {
-        return e.firstElementChild;
-      }
-      while (e) {
-        if (e.nextElementSibling) {
-          return e.nextElementSibling;
-        }
-        e = /** @type {!Element} */ (e.parentElement);
-      }
-      return null;
-    }
-
-    /**
      * Determines whether the specified element is inert, and returns the element
      * which caused this state. This is limited to, but may include, the body
      * element.
@@ -243,15 +211,22 @@ if (!('inert' in HTMLElement.prototype)) {
 
         // Otherwise, enumerate through adjacent elements to find the next
         // focusable element. This won't respect any custom tabIndex.
-        var candidate = inertElement;
-        for (;;) {
-          candidate = walkElementTree(candidate, lastTabDirection, inertElement);
-          if (!candidate) { break; }
-          if (!candidate.focus) { continue; }
-          if (!(candidate.tabIndex < 0)) {
-            candidate.focus();
-            if (getFocused() !== previous) { return; }
-          }
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, {
+          acceptNode: function(node) {
+            if (!node.focus || node.tabIndex < 0) {
+              return NodeFilter.FILTER_SKIP;  // look at descendants
+            }
+            var contained = inertElement.contains(node);
+            return contained ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+          },
+        });
+        walker.currentNode = inertElement;
+
+        var nextFunc = Math.sign(lastTabDirection) === -1 ? walker.previousNode : walker.nextNode
+        var next = nextFunc.bind(walker);
+        for (var candidate; candidate = next(); ) {
+          candidate.focus();
+          if (getFocused() !== previous) { return; }
         }
 
         // FIXME: If a focusable element can't be found here, it's likely to mean
