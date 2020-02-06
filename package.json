@@ -9,5 +9,9 @@
   },
   "author": "The Chromium Authors",
   "license": "Apache2",
-  "homepage": "https://github.com/GoogleChrome/inert-polyfill"
+  "homepage": "https://github.com/GoogleChrome/inert-polyfill",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.1"
+  }
 }

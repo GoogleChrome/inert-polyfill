@@ -24,7 +24,7 @@ void function() {
    * @param {boolean=} opt_shiftKey whether to send this tab with shiftKey
    */
   function sendTab(opt_shiftKey) {
-    var ev = null;
+    let ev = null;
     try {
       ev = new KeyboardEvent('keydown', {
         keyCode: 9,
@@ -67,14 +67,14 @@ void function() {
    * @return {!HTMLInputElement} added to page
    */
   function createInput(opt_text) {
-    var input = document.createElement('input');
+    const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = opt_text || '';
     holder.appendChild(input);
     return input;
   }
 
-  var holder;  // global holder for all tests
+  let holder;  // global holder for all tests
   setup(function() {
     holder = document.createElement('div');
     document.body.appendChild(holder);
@@ -84,8 +84,8 @@ void function() {
   });
 
   test('normal input should get focus', function() {
-    var div = document.createElement('div');
-    var input = document.createElement('input');
+    const div = document.createElement('div');
+    const input = document.createElement('input');
     input.type = 'text';
     input.value = 'dummy';
     div.appendChild(input);
@@ -100,11 +100,11 @@ void function() {
 
   });
   test('no programatic focus', function() {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.setAttribute('inert', '');
     holder.appendChild(div);
 
-    var input = createInput('test inert');
+    const input = createInput('test inert');
     div.appendChild(input);
 
     // TODO: fails when developer console is open, even though focus doesn't go
@@ -117,7 +117,7 @@ void function() {
     assert.notEqual(document.activeElement, div, 'inert element itself unavailable');
   });
   test('support inert property', function() {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
 
     div.inert = true;
     assert(div.hasAttribute('inert'));
@@ -130,11 +130,11 @@ void function() {
     assert(!div.inert);
   });
   test('click prevented', function() {
-    var clickCount = 0;
-    var div = document.createElement('div');
+    let clickCount = 0;
+    const div = document.createElement('div');
     holder.appendChild(div);
 
-    var button = document.createElement('button');
+    const button = document.createElement('button');
     button.addEventListener('click', function() {
       ++clickCount;
     });
@@ -147,11 +147,11 @@ void function() {
     assert.equal(clickCount, 1, 'programatic click disabled via inert');
   });
   test('focused click prevented', function() {
-    var clickCount = 0;
-    var div = document.createElement('div');
+    let clickCount = 0;
+    const div = document.createElement('div');
     holder.appendChild(div);
 
-    var input = document.createElement('input');
+    const input = document.createElement('input');
     input.type = 'text';
     input.addEventListener('click', function() {
       ++clickCount;
@@ -167,9 +167,9 @@ void function() {
     assert.equal(clickCount, 1, 'programatic click, even while ? focused, disabled via inert');
   });
   test('tab-over works', function() {
-    var beforeInput = createInput('before');
-    var duringInputInert = createInput('during');
-    var afterInput = createInput('after');
+    const beforeInput = createInput('before');
+    const duringInputInert = createInput('during');
+    const afterInput = createInput('after');
 
     duringInputInert.setAttribute('inert', '');
 
@@ -193,21 +193,21 @@ void function() {
     assert.equal(document.activeElement, beforeInput, 'tab-over (reverse) inert works');
   });
 
-  var testEl = document.createElement('div');
+  const testEl = document.createElement('div');
   if (testEl.createShadowRoot || testEl.attachShadow) {
     // test this
     test('inert within shadow root', function() {
-      var el = document.createElement('div');
+      const el = document.createElement('div');
       holder.appendChild(el);
-      var root = el.createShadowRoot ? el.createShadowRoot() : el.attachShadow({mode: 'open'});
+      const root = el.createShadowRoot ? el.createShadowRoot() : el.attachShadow({mode: 'open'});
 
-      var button = document.createElement('button');
+      const button = document.createElement('button');
       root.appendChild(button);
       button.focus();
       assert.equal(document.activeElement, el, 'shadow host itself is focused');
       assert.equal(root.activeElement, button, 'button within shadow is focused');
 
-      var inertButton = document.createElement('button');
+      const inertButton = document.createElement('button');
       inertButton.setAttribute('inert', '');
       root.appendChild(inertButton);
       inertButton.focus();
