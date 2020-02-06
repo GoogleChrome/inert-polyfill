@@ -46,7 +46,7 @@ if (!('inert' in HTMLElement.prototype)) {
       } else {
         style.appendChild(document.createTextNode(css));
       }
-      document.body.appendChild(style);
+      document.head.appendChild(style);
     }
     var css = "/*[inert]*/*[inert]{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}";
     applyStyle(css);
