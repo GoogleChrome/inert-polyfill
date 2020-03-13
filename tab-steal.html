@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <div tabindex="0" id="start">Focusable</div>
+
+  <div id="holder"></div>
+
+  <a href="#">Hello</a>
+
+  <div tabindex="0" id="next">Next focusable</div>
+
+  <div tabindex="0">Last focusable</div>
+
+  <script type="module">
+const startElement = document.getElementById('start');
+const nextElement = document.getElementById('next');
+
+document.addEventListener('keyup', (ev) => {
+  if (ev.key === 'Tab') {
+    console.warn('got Tab keyup');
+  }
+});
+
+document.addEventListener('keydown', (ev) => {
+  if (!ev.isTrusted) {
+    return;
+  }
+  if (ev.target === startElement && ev.key === 'Tab') {
+
+    // console.info('tab', ev.relatedTarget);
+
+    // const x = document.createElement('_inert-polyfill');
+    // x.setAttribute('tabindex', '-1');
+    // nextElement.before(x);
+    // x.focus();
+
+//    nextElement.focus();
+
+    // const faux = document.createElement('button');
+    // holder.append(faux);
+
+    // window.requestAnimationFrame(() => {
+    //   faux.remove();
+    // }, 0);
+
+  }
+});
+
+document.addEventListener('focusout', (ev) => {
+  console.info(ev.type, ev.target, 'to', ev.relatedTarget);
+}, {capture: true});
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <style>
+    body {
+      min-height: 50vh;
+    }
+
+    .active {
+      box-shadow: 0 0 4px blue;
+    }
+
+    *[inert] {
+      box-shadow: 0 4px 8px red;
+
+      /* user-select: none;
+      pointer-events: none; */
+    }
+  </style>
+
+<button tabindex="120">120</button>
+<button tabindex="100">100</button>
+
+<div id="test">Test div</div>
+
+<button tabindex="a">A index</button>
+<button inert>no index, inert</button>
+<button tabindex="">implicit index</button>
+<button accesskey="x" inert>accesskey X</button>
+<button tabindex="0" id="userLast">0</button>
+<button tabindex="-66">negative, -66</button>
+
+<script type="module">
+
+const isSafari = /^((?!Chrome|Android).)*Safari/i.test(navigator.userAgent) || ('standalone' in navigator);
+
+const el = document.getElementById('test');
+const root = el.attachShadow({mode: 'open'});
+
+root.innerHTML = `
+<button tabindex="80">80 shadow</button>
+<button>shadow</button>
+<div style="border: 2px solid red;">
+  <slot></slot>
+</div>
+`;
+
+
+document.body.addEventListener('click', (ev) => {
+  if (ev.target instanceof HTMLButtonElement) {
+    console.warn('got button click', ev.target);
+  }
+});
+
+
+
+const createHelperNode = (tabIndex) => {
+  const node = document.createElement('span');
+  node.style.position = 'absolute';
+  node.style.opacity = 0;
+  node.tabIndex = tabIndex;
+  node.setAttribute('aria-hidden', 'true');
+  node.setAttribute('title', 'inert-polyfill');
+  return node;
+};
+
+const firstNode = createHelperNode(1);
+const lastNode = createHelperNode(0);
+
+const toggleFocus = (focused) => {
+  if (focused) {
+    firstNode.parentNode && document.documentElement.removeChild(firstNode);
+    lastNode.parentNode && document.documentElement.removeChild(lastNode);
+  } else {
+    document.documentElement.insertBefore(firstNode, document.documentElement.firstChild);
+    document.documentElement.appendChild(lastNode);
+  }
+};
+
+window.addEventListener('focusin', () => toggleFocus(true));  // focusin occurs after focus
+window.addEventListener('blur', () => toggleFocus(false));
+
+
+window.addEventListener('keyup', (e) => {
+  if (e.key === 'Tab') {
+    console.warn('got keyup', e.target);
+  }
+});
+
+toggleFocus(document.hasFocus());  // initial state
+
+
+import {isInert, traverse} from './dom.js';
+
+
+let explicitTabDirection = 0;
+
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Tab') {
+    explicitTabDirection = (ev.shiftKey ? -1 : +1);
+
+    // nb. requestAnimationFrame might also suffice. microtask isn't enough.
+    window.setTimeout(() => {
+      explicitTabDirection = 0;
+    }, 0);
+  }
+});
+
+document.addEventListener('focusout', (ev) => {
+  console.info('focusout moving to', ev.relatedTarget, 'was focused', ev.target, 'TAB DIRECTION', explicitTabDirection);
+
+  if (!isInert(ev.relatedTarget)) {
+    return false;  // do nothing, all good
+  }
+
+  if (!explicitTabDirection) {
+    document.activeElement.blur();
+  }
+
+  // if (isInert(ev.relatedTarget)) {
+  //   userLast.focus();
+  // }
+}, {capture: true});
+
+
+document.addEventListener('click', (ev) => {
+  console.debug('click', ev.target);
+}, {capture: true});
+
+
+let lastTabDirection;
+
+document.addEventListener('focus', (ev) => {
+//  console.info('got ev focusin, active=', document.activeElement, 'target=', ev.target, 'relatedTarget=', ev.relatedTarget, 'tab?', lastTabDirection);
+
+  const target = ev.target;
+
+  if (target === firstNode) {
+    lastTabDirection = +1;
+    console.warn('got FIRST NODE');
+  } else if (target === lastNode) {
+    lastTabDirection = -1;
+    console.warn('got LAST NODE');
+  } else if (!isInert(target)) {
+    lastTabDirection = 0;
+    return false;  // nothing to do, not inert
+  }
+
+  console.info('got inert element', target);
+  const tabIndex = target.tabIndex;
+  target.blur();
+
+  if (tabIndex < 0) {
+    // Somehow this got focus: maybe via .focus() in JS or with accesskey.
+    target.blur();
+    return false;
+  }
+
+  const indexed = document.querySelectorAll('[tabindex]');
+
+}, {capture: true});
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
